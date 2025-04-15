@@ -20,7 +20,7 @@ pipeline {
                 WEB_APP_NAME = credentials('WEB_APP_NAME')
             }
             steps {
-                bat "az webapp deploy --resource-group ${RESOURCE_GROUP} --name ${WEB_APP_NAME} --src-path target/*.jar --type jar"
+                bat "az webapp deploy --resource-group ${RESOURCE_GROUP} --name ${WEB_APP_NAME} --src-path target\\ems-backend-0.0.1-SNAPSHOT.jar --type jar"
             }
         }
     }
