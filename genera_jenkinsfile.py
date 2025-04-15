@@ -22,7 +22,7 @@ openai_client = openai.AzureOpenAI(
 )
 
 # ✅ Define repository path
-repo_path = r"C:\Users\MTL1027\Downloads\jenkins-backend" # 🔹 Change this to your repo path
+repo_path = r"C:\\Users\\MTL1027\\Downloads\\llyods-demo-backend" # 🔹 Change this to your repo path
 jenkinsfile_path = os.path.join(repo_path, "Jenkinsfile")
 
 # ✅ Define prompt for AI (modified for .jar deployment)
@@ -31,18 +31,18 @@ prompt = """Generate a Jenkinsfile with the following conditions:
 - Do NOT include Markdown formatting like 'groovy' or 'sh' at the start or end.
 - The response should start directly with 'pipeline {'.
 - The pipeline should have three stages: Build, Test, and Deploy.
+- Use 'bat' instead of 'sh' for Windows compatibility.
 - The Build stage should run 'mvn clean package'.
 - The Test stage should run 'mvn test'.
-- The Deploy stage should deploy the artifact to Azure App Service as a .jar file (not a .war file).
-  - Use 'target/*.jar' as the source path for the deployment.
-  - The Azure Resource Group and Web App Name should be retrieved from Jenkins credentials:
-    - RESOURCE_GROUP = credentials('RESOURCE_GROUP')
-    - WEB_APP_NAME = credentials('WEB_APP_NAME')
-  - In the Deploy stage, use the following Azure CLI command to deploy:
-    - 'az webapp deploy --resource-group $RESOURCE_GROUP --name $WEB_APP_NAME --src-path target/*.jar --type jar'.
-- Ensure proper environment variable usage in the Jenkinsfile for Azure CLI commands.
-- Replace 'sh' with 'bat' for Windows compatibility.
+- Declare environment variables globally using the 'environment' block:
+  - RESOURCE_GROUP = credentials('RESOURCE_GROUP')
+  - WEB_APP_NAME = credentials('WEB_APP_NAME')
+- In the Deploy stage, deploy the artifact to Azure App Service using Azure CLI:
+  - Use the command: 'az webapp deploy --resource-group %RESOURCE_GROUP% --name %WEB_APP_NAME% --src-path target\\*.jar --type jar'.
+- Do not use Groovy string interpolation (like ${}) inside the bat command.
+- Use Windows-style environment variable syntax (%VARIABLE%) inside the bat command.
 """
+
 
 
 try:
