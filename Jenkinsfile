@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Build') {
             steps {
@@ -15,12 +15,12 @@ pipeline {
         }
         
         stage('Deploy') {
-            environment {
-                RESOURCE_GROUP = credentials('RESOURCE_GROUP')
-                WEB_APP_NAME = credentials('WEB_APP_NAME')
-            }
             steps {
-                bat "az webapp deploy --resource-group ${RESOURCE_GROUP} --name ${WEB_APP_NAME} --src-path target/*.jar --type jar"
+                script {
+                    def resourceGroup = credentials('RESOURCE_GROUP')
+                    def webAppName = credentials('WEB_APP_NAME')
+                    bat "az webapp deploy --resource-group ${resourceGroup} --name ${webAppName} --src-path target\\*.jar --type jar"
+                }
             }
         }
     }
