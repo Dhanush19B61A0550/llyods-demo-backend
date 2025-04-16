@@ -1,11 +1,10 @@
 pipeline {
     agent any
-
     environment {
         RESOURCE_GROUP = credentials('RESOURCE_GROUP')
         WEB_APP_NAME = credentials('WEB_APP_NAME')
+        AZURE_CREDENTIALS = credentials('AZURE_CREDENTIALS')
     }
-
     stages {
         stage('Build') {
             steps {
@@ -19,7 +18,12 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                bat 'az webapp deploy --resource-group %RESOURCE_GROUP% --name %WEB_APP_NAME% --src-path target\\ems-backend-0.0.1-SNAPSHOT.jar --type jar'
+                withCredentials([file(credentialsId: 'AZURE_CREDENTIALS', variable: 'AZURE_AUTH_LOCATION')]) {
+                    bat '''
+                        powershell -Command "az login --service-principal --username (Get-Content $env:AZURE_AUTH_LOCATION | ConvertFrom-Json).clientId --password (Get-Content $env:AZURE_AUTH_LOCATION | ConvertFrom-Json).clientSecret --tenant (Get-Content $env:AZURE_AUTH_LOCATION | ConvertFrom-Json).tenantId"
+                    '''
+                    bat 'az webapp deploy --resource-group %RESOURCE_GROUP% --name %WEB_APP_NAME% --src-path target\\*.jar --type jar'
+                }
             }
         }
     }
