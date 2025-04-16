@@ -19,7 +19,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 withCredentials([file(credentialsId: 'AZURE_CREDENTIALS', variable: 'AZURE_AUTH_LOCATION')]) {
-                    bat 'powershell -Command "az login --service-principal --username (Get-Content $env:AZURE_AUTH_LOCATION | ConvertFrom-Json).clientId --password (Get-Content $env:AZURE_AUTH_LOCATION | ConvertFrom-Json).clientSecret --tenant (Get-Content $env:AZURE_AUTH_LOCATION | ConvertFrom-Json).tenantId"'
+                    bat 'powershell -Command "az login --service-principal --username (Get-Content %AZURE_AUTH_LOCATION% | ConvertFrom-Json).clientId --password (Get-Content %AZURE_AUTH_LOCATION% | ConvertFrom-Json).clientSecret --tenant (Get-Content %AZURE_AUTH_LOCATION% | ConvertFrom-Json).tenantId"'
                     bat 'az webapp deploy --resource-group %RESOURCE_GROUP% --name %WEB_APP_NAME% --src-path target\\*.jar --type jar'
                 }
             }
