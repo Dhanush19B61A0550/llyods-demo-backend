@@ -3,7 +3,7 @@ pipeline {
     environment {
         RESOURCE_GROUP = credentials('RESOURCE_GROUP')
         WEB_APP_NAME = credentials('WEB_APP_NAME')
-        AZURE_CREDENTIALS = credentials('AZURE_CREDENTIALS')
+        AZURE_CREDENTIALS = credentials('AZURE_CREDENTIALS') // secret file
     }
     stages {
         stage('Build') {
