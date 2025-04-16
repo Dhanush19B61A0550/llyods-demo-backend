@@ -23,7 +23,7 @@ pipeline {
                     string(credentialsId: 'AZURE_TENANT_ID', variable: 'TENANT_ID') 
                 ]) {
                     bat 'az login --service-principal --username %CLIENT_ID% --password %CLIENT_SECRET% --tenant %TENANT_ID%'
-                    bat 'az webapp deploy --resource-group %RESOURCE_GROUP% --name %WEB_APP_NAME% --src-path target\\*.jar --type jar'
+                    bat 'az webapp deploy --resource-group %RESOURCE_GROUP% --name %WEB_APP_NAME% --src-target\\ems-backend-0.0.1-SNAPSHOT.jar --type jar'
                 }
             }
         }
