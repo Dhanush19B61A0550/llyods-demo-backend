@@ -37,15 +37,18 @@ prompt = """Generate a Jenkinsfile with the following conditions:
 - Declare environment variables globally using the 'environment' block:
   - RESOURCE_GROUP = credentials('RESOURCE_GROUP')
   - WEB_APP_NAME = credentials('WEB_APP_NAME')
-  - AZURE_CREDENTIALS = credentials('AZURE_CREDENTIALS') // secret file
-- In the Deploy stage, authenticate with Azure using a service principal stored in the secret file:
-  - Use 'withCredentials([file(credentialsId: 'AZURE_CREDENTIALS', variable: 'AZURE_AUTH_LOCATION')])'
-  - Inside it, run a PowerShell command to read the JSON file and login using:
-    - 'az login --service-principal --username <clientId> --password <clientSecret> --tenant <tenantId>'
+- In the Deploy stage, authenticate with Azure using service principal credentials stored as separate Jenkins secrets:
+  - Use 'withCredentials' to load three secret text values:
+    - AZURE_CLIENT_ID → variable: CLIENT_ID
+    - AZURE_CLIENT_SECRET → variable: CLIENT_SECRET
+    - AZURE_TENANT_ID → variable: TENANT_ID
+  - Use a 'bat' block to run:
+    - 'az login --service-principal --username %CLIENT_ID% --password %CLIENT_SECRET% --tenant %TENANT_ID%'
+    - Then deploy using:
+      - 'az webapp deploy --resource-group %RESOURCE_GROUP% --name %WEB_APP_NAME% --src-path target\\*.jar --type jar'
 - Use Windows-style environment variable syntax (e.g., %VARIABLE%) inside bat commands.
-- After login, deploy the artifact using:
-  - 'az webapp deploy --resource-group %RESOURCE_GROUP% --name %WEB_APP_NAME% --src-path target\\*.jar --type jar'
 - Do not use Groovy string interpolation (like ${}) inside the bat command.
+
 
 """
 
